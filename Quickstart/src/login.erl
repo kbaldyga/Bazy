@@ -13,7 +13,7 @@ login() ->
         undefined ->
             "You are not logged in.";
         X ->
-            "Wellcome " ++ X ++ ". "
+            wf:f("Welcome ~s. ",[X])
     end,
     [
      #p{ body =[Login,
@@ -34,20 +34,21 @@ login() ->
      ].
 
 event(login) ->
-    io:format("-> ~p~n", [[wf:q("tb_login"),wf:q("tb_password")]]),
     case db_login:validate(wf:q("tb_login"),wf:q("tb_password")) of
         {ok,User} ->
             wf:user(User),
             wf:redirect_from_login("login");
-        {error,bad_login} ->
+        {error,X} ->
+            error_logger:error_report("module: login, error: "++X),
             wf:redirect_from_login("login")
     end;
 event(logout) ->
-    io:format("logout"),
     wf:clear_session(),
     wf:redirect("login");
 event(test) ->
     db_login:test(),
-    db_login:add_account("elo","melo","email3");
+    X = db_login:add_account("asd","qwe","email3"),
+    io:format("~p~n",[X]);
+    %db_login:upload_image();
 event(_) ->
     ok.
