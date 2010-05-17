@@ -2,8 +2,8 @@
 -compile(export_all).
 
 add_product(Name, SDesc, Price, Available) ->
-    add_product(Name,SDesc,"", Price,Available,"").
-add_product(Name,SDesc,LDesc, Price,Available, Photo) ->
+    add_product(Name,SDesc,"", Price,Available,"",[]).
+add_product(Name,SDesc,LDesc, Price,Available, Photo,Categories) ->
     Query = wf:f(
               "insert into produkt values(DEFAULT,'~s','~s',~s,~s) RETURNING produkt_id",
               [Name,SDesc,Price,Available]),
@@ -15,5 +15,6 @@ add_product(Name,SDesc,LDesc, Price,Available, Photo) ->
             Query2 = wf:f(
                       "insert into szczegoly values(~p,'~s','~s')",
                       [NId,LDesc,Photo]),
-            database:sql_query(Query2)
+            database:sql_query(Query2),
+            db_products_categories:multi_insert(NId,Categories)
     end.

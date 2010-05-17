@@ -9,7 +9,8 @@ title() ->
     "Dodaj nowy produkt".
 
 add_product() ->
-    [
+    wf:session(products,sets:new()),
+    Body = [
      #p{},
      #label { text="Product name: " },
      #textbox { id=tb_name, text="", next=ta_description },
@@ -23,11 +24,12 @@ add_product() ->
      #label { text="Available" },
      #textbox { id=tb_available, text="" },
      #flash {},
-     #p{},
+     #label { text="Photo" },
      #upload { tag=img_upload , show_button=false},
-     #button { text="Add",
+     #button { id=btn_add, text="Add",
                actions=#event{type=click,postback=add}}
-    ].
+           ],
+    Body.
 
 categories_data() ->
     {selected,_Columns, Rows} = db_categories:read_all(),
@@ -47,8 +49,7 @@ categories() ->
     Map = categories_map(),
     [
      #flash { },
-     #button { id=removeButton, text="Remove from categories",
-               actions=#event{type=click,postback=remove}},
+     #label { id=labelInfo, text="" },
      #h2 { text = "Select categories" },
      #table { class=tiny, rows=[
         #tablerow { cells=[
@@ -60,7 +61,8 @@ categories() ->
         #bind { id=catTable, data=Data, map=Map,
                 transform=fun alternate_color/2,
                 body=#tablerow {id=top,cells=[
-                  #tablecell { body=#button { id=idButton, text=" select" } },
+%                  #tablecell { body=#button { id=idButton, text=" select" } },
+                  #tablecell { body=#checkbox { id=idButton, text=" select" } },
                   #tablecell { id=nameLabel },
                   #tablecell { id=descriptionLabel }
                 ]}}
@@ -68,26 +70,24 @@ categories() ->
     ].
 
 event(ID) when is_integer(ID) ->
+
     New = case wf:session(products) of
         undefined ->
-            [ID] ;
-        L when is_list(L)->
-            case lists:member(ID,L) of
+            S = sets:new(),
+            sets:add_element(ID,S);
+        S ->
+            case sets:is_element(ID,S) of
                 true ->
-                    L;
+                    sets:del_element(ID,S);
                 false  ->
-                    [ID|L]
+                    sets:add_element(ID,S)
            end
     end,
     wf:session(products,New),
     C = db_categories:category_name(ID),
-    wf:flash(wf:f("Added to ~s. Now in ~p categories",[C,length(New)])),
+    wf:update(labelInfo, wf:f("Changed: ~s. Now in ~p categories",[C,length(sets:to_list(New))])),
     ok;
 
-event(remove) ->
-    wf:session(products,[]),
-    wf:flash("Removed from categories"),
-    ok;
 
 event(add) ->
     %% db_categories:add_category(
@@ -102,8 +102,8 @@ event(add) ->
         undefined -> "" ;
         X -> X
     end,
-    db_products:add_product(Name,SD,LD,Price,A,Photo),
-    wf:session(products,[]),
+    db_products:add_product(Name,SD,LD,Price,A,Photo,sets:to_list(wf:session(products))),
+    %wf:session(products,sets:new()),
     wf:flash("Database updated!"),
     ok;
 
@@ -116,11 +116,11 @@ finish_upload_event(_Tag,unfinished,_,_) ->
     ok;
 finish_upload_event(_Tag, FileName, LocalFileData, _Node) ->
     Name = lists:nth(3,string:tokens(LocalFileData,"/")),
-    image:resize(LocalFileData, wf:f("static/images/produkty/~s-small.jpg",[Name]),100,100),
-    image:resize(LocalFileData,wf:f("static/images/produkty/~s-big.jpg",[Name]),300,300),
+    image:resize(LocalFileData, wf:f("static/images/produkty/small-~s.jpg",[Name]),100,100),
+    image:resize(LocalFileData,wf:f("static/images/produkty/big-~s.jpg",[Name]),300,300),
     wf:flash([
               #label { text=FileName },
-              #image { image=wf:f("images/produkty/~s-small.jpg",[Name]) }
+              #image { image=wf:f("images/produkty/small-~s.jpg",[Name]) }
              ]),
     wf:session(image,wf:f("~s.jpg",[Name])),
     ok.
