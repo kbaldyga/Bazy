@@ -17,31 +17,22 @@ add_category() ->
      #label { text="Opis: "},
      #textarea { id=ta_description, text="" },
      #flash {},
-     #p{},
-     #upload { tag=img_upload, button_text="Prze¶lij obrazek" },
      #button { text="Dodaj",
                actions=#event{type=click,postback=add}}
     ].
 
 event(add) ->
-    %% db_categories:add_category(
-    %%   wf:q("tb_name"),
-    %%   wf:q("ta_description")),
+    io:format("~s~n",[wf:q("tb_name")]),
+    case db_categories:add_category(
+       wf:q("tb_name"),
+       wf:q("ta_description")) of
+        {updated,X} ->
+            wf:flash(
+              wf:f("Database updated! <br>~s row(s) affected",[integer_to_list(X)]));
+        {error,X} ->
+            wf:flash("Error: ~s",[X])
+    end,
     ok;
 
 event(_) ->
-    ok.
-start_upload_event(img_upload) ->
-    wf:flash("Rozpoczêto przesy³anie...").
-finish_upload_event(_Tag,unfinished,_,_) ->
-    wf:flash("Wystapil blad"),
-    ok;
-finish_upload_event(_Tag, FileName, LocalFileData, Node) ->
-    FileSize = filelib:file_size(LocalFileData),
-    wf:flash(wf:f("Uploaded file: ~s (~p bytes) on node ~s.", [FileName, FileSize, Node])),
-
-    wf:flash([
-              #label { text=FileName },
-             #image { image=wf:f("images/produkty/~s",[FileName]) }
-             ]),
     ok.
