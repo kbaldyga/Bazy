@@ -33,3 +33,13 @@ get_count() ->
 get_names_count() ->
     Query = "select kategoria.nazwa,kategoria.nazwa,zbior_kategorii.kategoria_id,count(*) from zbior_kategorii join kategoria on kategoria.kategoria_id=zbior_kategorii.kategoria_id group by zbior_kategorii.kategoria_id, kategoria.nazwa",
     database:sql_query(Query).
+
+
+products_from_category(ID) ->
+    Query = case ID of
+            0 ->
+               "select distinct produkt.produkt_id, produkt.nazwa, produkt.nazwa, produkt.krotki_opis, produkt.cena, produkt.ile_dostepnych, szczegoly.nazwa_zdjecia from produkt join zbior_kategorii on produkt.produkt_id = zbior_kategorii.produkt_id join szczegoly on szczegoly.produkt_id = produkt.produkt_id";
+            Id ->
+               wf:f("select produkt.produkt_id, produkt.nazwa, produkt.nazwa, produkt.krotki_opis, produkt.cena, produkt.ile_dostepnych, szczegoly.nazwa_zdjecia from produkt join zbior_kategorii on produkt.produkt_id = zbior_kategorii.produkt_id join szczegoly on szczegoly.produkt_id = produkt.produkt_id where zbior_kategorii.kategoria_id=~p",[Id])
+    end,
+    database:sql_query(Query).

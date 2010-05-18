@@ -8,19 +8,63 @@ main() ->
 title() ->
     "Dodaj now± kategoriê".
 
-add_category() ->
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% TABELKA Z PRODUKTAMI
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+products_data() ->
+    Id = case wf:q("id") of
+             undefined -> 0;
+             N -> list_to_integer(N)
+    end,
+    {selected, _Columns, Rows } = db_products_categories:products_from_category(Id),
+    lists:map(fun(X) ->
+                      tuple_to_list(X) end,Rows).
+
+products_map() ->
     [
-     #p{},
-     #label { text="Nazwa kategorii: " },
-     #textbox { id=tb_name, text="", next=ta_description },
-     #p {},
-     #label { text="Opis: "},
-     #textarea { id=ta_description, text="" },
-     #flash {},
-     #button { text="Dodaj",
-               actions=#event{type=click,postback=add}}
+     prodId@text,
+     prodName@text,
+     prodName@url,
+     prodDesc@text,
+     prodPrice@text,
+     prodAvail@text,
+     prodPict@image
     ].
 
+products() ->
+    Data = products_data(),
+    Map = products_map(),
+    Body = [
+     #table { rows=[
+            #tablerow { cells=[
+              #tableheader { text="Photo" },
+              #tableheader { text="Name" },
+              #tableheader { text="Price" },
+              #tableheader { text="Available" }]
+                      },
+            #bind { id=productsTable, data=Data, map=Map,
+                    transform=fun products_transform/2,
+                    body=#tablerow { id=top, cells=[
+                       #tablecell { body=#image { id=prodPict } },
+                       #tablecell { body=#link { id = prodName } },
+                       #tablecell { id=prodPrice },
+                       #tablecell { id=prodAvail }]}}]
+              }
+           ],
+    Body.
+
+products_transform(DataRow,_Acc) ->
+    [ Id, Name, _Url, Desc, Price, Avail, Pict] = DataRow,
+    { [Id,Name,
+       wf:f("product?id=~p",[Id]),
+       Desc,wf:f("~w",[Price]),wf:f("~w",[Avail]),
+       wf:f("images/produkty/small-~s",[Pict])], _Acc, [] }.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% TABELKA Z KATEGORIAMI
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 categories_data() ->
     {selected,_Columns,Rows} = db_products_categories:get_names_count(),
     lists:map(fun(X) ->
@@ -50,6 +94,25 @@ categories_transform(DataRow,_Acc) ->
        wf:f("category?id=~p",[Id]),
        Id,Count],
       _Acc, [] }.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% DODAWANIE KATEGORII
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+add_category() ->
+    [
+     #p{},
+     #label { text="Nazwa kategorii: " },
+     #textbox { id=tb_name, text="", next=ta_description },
+     #p {},
+     #label { text="Opis: "},
+     #textarea { id=ta_description, text="" },
+     #flash {},
+     #button { text="Dodaj",
+               actions=#event{type=click,postback=add}}
+    ].
+
 
 event(add) ->
     io:format("~s~n",[wf:q("tb_name")]),
