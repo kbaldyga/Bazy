@@ -8,6 +8,69 @@ main() ->
 title() ->
     "Dodaj nowy produkt".
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%  LIST PRODUCTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+product_data() ->
+    Id = case wf:q("id") of
+             undefined -> 0; % wf:redirect("index")
+             N -> list_to_integer(N)
+         end,
+    {selected,_Columns,Rows} = db_products:select_product(Id),
+    lists:map(fun(X) ->
+                      tuple_to_list(X) end,Rows).
+
+product_map() ->
+    [
+     prodId@text,
+     prodName@text,
+     prodName@url,
+     prodSDesc@text,
+     prodLDesc@text,
+     prodPrice@text,
+     prodAvail@text,
+     prodPict@image
+    ].
+
+product() ->
+    Data = product_data(),
+    Map = product_map(),
+    Body = [
+     #table { rows=[
+            #tablerow { cells=[
+              #tableheader { text="Photo" },
+              #tableheader { text="Name" },
+              #tableheader { text="Price" },
+              #tableheader { text="Available" }]
+                      },
+            #bind { id=productsTable, data=Data, map=Map,
+                    transform=fun product_transform/2,
+                    body=#tablerow { id=top, cells=[
+                       #tablecell { body=#image { id=prodPict } },
+                       #tablecell { body=#link { id = prodName } },
+                       #tablecell { id=prodPrice },
+                       #tablecell { id=prodAvail }]}}]
+              }
+           ],
+    Body.
+
+
+product_transform(DataRow,_Acc) ->
+    [ Id, Name, _Url, Desc, LDesc, Price, Avail, Pict] = DataRow,
+    Photo = case filelib:is_file(wf:f("static/images/produkty/big-~s",[Pict])) of
+                true ->
+                    wf:f("images/produkty/big-~s",[Pict]);
+                false ->
+                    "images/produkty/no_image.jpg"
+            end,
+    { [Id,Name,
+       wf:f("product?id=~p",[Id]),
+       Desc,LDesc, wf:f("~w",[Price]),wf:f("~w",[Avail]),
+       Photo], _Acc, [] }.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%  ADD PRODUCT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 add_product() ->
     wf:session(products,sets:new()),
     Body = [
@@ -31,6 +94,9 @@ add_product() ->
            ],
     Body.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%  SELECT CATEGORY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 categories_data() ->
     {selected,_Columns, Rows} = db_categories:read_all(),
     lists:map(fun(X) ->
@@ -68,6 +134,9 @@ categories() ->
                 ]}}
      ]}
     ].
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%  EVENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 event(ID) when is_integer(ID) ->
 

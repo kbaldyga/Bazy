@@ -18,3 +18,11 @@ add_product(Name,SDesc,LDesc, Price,Available, Photo,Categories) ->
             database:sql_query(Query2),
             db_products_categories:multi_insert(NId,Categories)
     end.
+select_product(Id) ->
+    Query = case Id of
+                0 ->
+                    "select distinct produkt.produkt_id, produkt.nazwa, produkt.nazwa, produkt.krotki_opis, szczegoly.dlugi_opis, produkt.cena, produkt.ile_dostepnych, szczegoly.nazwa_zdjecia from produkt join szczegoly on szczegoly.produkt_id = produkt.produkt_id";
+                Id ->
+                    wf:f("select distinct produkt.produkt_id, produkt.nazwa, produkt.nazwa, produkt.krotki_opis, szczegoly.dlugi_opis, produkt.cena, produkt.ile_dostepnych, szczegoly.nazwa_zdjecia from produkt join szczegoly on szczegoly.produkt_id = produkt.produkt_id where produkt.produkt_id=~p",[Id])
+            end,
+    database:sql_query(Query).

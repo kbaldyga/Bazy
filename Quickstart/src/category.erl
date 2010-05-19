@@ -56,10 +56,16 @@ products() ->
 
 products_transform(DataRow,_Acc) ->
     [ Id, Name, _Url, Desc, Price, Avail, Pict] = DataRow,
+    Photo = case filelib:is_file(wf:f("static/images/produkty/small-~s",[Pict])) of
+                true ->
+                    wf:f("images/produkty/small-~s",[Pict]);
+                false ->
+                    "images/produkty/no_image.jpg"
+            end,
     { [Id,Name,
        wf:f("product?id=~p",[Id]),
        Desc,wf:f("~w",[Price]),wf:f("~w",[Avail]),
-       wf:f("images/produkty/small-~s",[Pict])], _Acc, [] }.
+       Photo], _Acc, [] }.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
