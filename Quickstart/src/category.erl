@@ -3,10 +3,10 @@
 -compile(export_all).
 
 main() ->
-    #template { file = "./templates/category.html" }.
+    #template { file = "./templates/index.html" }.
 
 title() ->
-    "Dodaj now± kategoriê".
+    "SuperShop".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36,21 +36,23 @@ products() ->
     Data = products_data(),
     Map = products_map(),
     Body = [
-     #table { rows=[
+     #table { class="sample", rows=[
             #tablerow { cells=[
-              #tableheader { text="Photo" },
-              #tableheader { text="Name" },
-              #tableheader { text="Price" },
-              #tableheader { text="Available" }]
+              #tableheader { style="width:107px;",text="Photo" },
+              #tableheader { style="width:100px;",text="Name" },
+              #tableheader { style="width:200px;",text="Description" },
+              #tableheader { style="width:40px;",text="Price" },
+              #tableheader { style="width:40px;",text="Avail." }]
                       },
             #bind { id=productsTable, data=Data, map=Map,
                     transform=fun products_transform/2,
-                    body=#tablerow { id=top, cells=[
-                       #tablecell { body=#image { id=prodPict } },
-                       #tablecell { body=#link { id = prodName } },
-                       #tablecell { id=prodPrice },
-                       #tablecell { id=prodAvail }]}}]
-              }
+                       body=#tablerow { id=top, cells=[
+                       #tablecell { style="width:107px;", body=#image { id=prodPict } },
+                       #tablecell { style="width:100px;",body=#link { id = prodName } },
+                       #tablecell { style="width:200px;",id=prodDesc },
+                       #tablecell { style="width:40px;",id=prodPrice },
+                       #tablecell { style="width:40px;",id=prodAvail } ] } } ] }
+
            ],
     Body.
 
@@ -62,9 +64,15 @@ products_transform(DataRow,_Acc) ->
                 false ->
                     "images/produkty/no_image.jpg"
             end,
+    Av = if
+             Avail > 0 ->
+                 "Yes!";
+             true ->
+                 "No"
+        end,
     { [Id,Name,
        wf:f("product?id=~p",[Id]),
-       Desc,wf:f("~w",[Price]),wf:f("~w",[Avail]),
+       Desc,wf:f("~w eur",[Price]),wf:f("~s",[Av]),
        Photo], _Acc, [] }.
 
 
@@ -88,10 +96,12 @@ categories() ->
     Data = categories_data(),
     Map = categories_map(),
     [
-     #table { rows=[#bind { id=catTable, data=Data, map=Map,
+     #bind { id=catTable, data=Data, map=Map,
                             transform=fun categories_transform/2,
-                      body=#tablerow {id=top, cells=[
-                         #tablecell { body=#link { id=catLink } } ] } } ] }
+                      body=[
+                         "<li>",
+                         #link { id=catLink, class=none } ,
+                         "</li>"] }
     ].
 
 categories_transform(DataRow,_Acc) ->
@@ -100,38 +110,6 @@ categories_transform(DataRow,_Acc) ->
        wf:f("category?id=~p",[Id]),
        Id,Count],
       _Acc, [] }.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% DODAWANIE KATEGORII
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-add_category() ->
-    [
-     #p{},
-     #label { text="Nazwa kategorii: " },
-     #textbox { id=tb_name, text="", next=ta_description },
-     #p {},
-     #label { text="Opis: "},
-     #textarea { id=ta_description, text="" },
-     #flash {},
-     #button { text="Dodaj",
-               actions=#event{type=click,postback=add}}
-    ].
-
-
-event(add) ->
-    io:format("~s~n",[wf:q("tb_name")]),
-    case db_categories:add_category(
-       wf:q("tb_name"),
-       wf:q("ta_description")) of
-        {updated,X} ->
-            wf:flash(
-              wf:f("Database updated! <br>~s row(s) affected",[integer_to_list(X)]));
-        {error,X} ->
-            wf:flash("Error: ~s",[X])
-    end,
-    ok;
 
 event(_) ->
     ok.

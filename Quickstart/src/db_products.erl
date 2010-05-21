@@ -26,3 +26,7 @@ select_product(Id) ->
                     wf:f("select distinct produkt.produkt_id, produkt.nazwa, produkt.nazwa, produkt.krotki_opis, szczegoly.dlugi_opis, produkt.cena, produkt.ile_dostepnych, szczegoly.nazwa_zdjecia from produkt join szczegoly on szczegoly.produkt_id = produkt.produkt_id where produkt.produkt_id=~p",[Id])
             end,
     database:sql_query(Query).
+get_name(Id) ->
+    Query = wf:f("select nazwa from produkt where produkt_id=~p",[Id]),
+    { selected, _Columns, [{Name}] } = database:sql_query(Query),
+    Name.
