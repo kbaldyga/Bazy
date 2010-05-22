@@ -75,9 +75,9 @@ event(add_to_cart) ->
     Set = case wf:session(koszyk) of
         undefined ->
             S = sets:new(),
-            sets:add_element(list_to_integer(wf:q("id")),S);
+            sets:add_element({list_to_integer(wf:q("id")),1},S);
         S ->
-            sets:add_element(list_to_integer(wf:q("id")),S)
+            sets:add_element({list_to_integer(wf:q("id")),1},S)
     end,
     wf:session(koszyk,Set),
     wf:flash("Added to cart!");
