@@ -3,13 +3,15 @@
 -compile(export_all).
 
 main() ->
-    #template { file = ".templates/admin.html" }.
+    #template { file = "./templates/admin.html" }.
 
 title() ->
     "Admin control page".
 
-admin() ->
-    ok.
+content() ->
+    add_category().
+categories() ->
+    category:categories().
 
 
 

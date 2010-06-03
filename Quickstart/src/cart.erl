@@ -45,26 +45,38 @@ cart_content() ->
             #tablerow { cells=[
               #tableheader { style="width:100px;",text="Name" },
               #tableheader { style="width:100px;",text="How much" },
-              #tableheader { style="width:100px;",text="" }]
+              #tableheader { style="width:100px;",text="Price" }]
                       },
             #bind { id=cartContent, data=Data, map=Map,
                        body=#tablerow { id=top, cells=[
                        #tablecell { style="width:200px;",id=contName },
                        #tablecell { style="width:40px;", body=
-                                        #inplace_textbox { id=contId, text="1"} }
+                                        #inplace_textbox { id=contId, text="1"} },
+                       #tablecell { style="width:100px", id=contPrice }
                        %% #tablecell { style="width:40px", body=
                        %%              #button { id=contId, text="remove",
                        %%                      actions=#event{type=click}  }
                        %%                               } ] } } ] },
                                                        ]}}]},
          #button { id=finish_btn, text="Finish shopping",
-                   actions=#event{type=click,postback=finish} }
+                   actions=#event{type=click,postback=finish} },
+         #flash{}
         ],
     Body.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 event(finish) ->
+    Cart = sets:to_list(wf:session(koszyk)),
+    %%Sum = lists:foldr(fun({{E,Price},C},Acc) ->
+    %%                         io:format("P ~p, C ~c, A ~p ~n", [Price,C,Acc]),
+    %%                          (Price * C) + Acc end,0,Cart),
+    io:format("~p", [Cart]),
+    wf:flash( [#label { text = "Whole Price: " ++ "Sum" } ,
+               #button { id=loginbtn, text="Order",
+                         actions=#event{type=click, postback=order}}]);
+
+event(login) ->
     User = case wf:user() of
         undefined ->
             wf:redirect_to_login("login");

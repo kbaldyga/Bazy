@@ -34,5 +34,16 @@ get_name(Id) ->
     Name.
 get_name_price(Id) ->
     Query = wf:f("select nazwa, cena from produkt where produkt_id=~p", [Id]),
-    {selected, _Columns, [{Name,Price}] = database:sql_query(Query),
-    {Name,PRice}.
+    {selected, _Columns, [{Name,Price}]} = database:sql_query(Query),
+    {Name,integer_to_list(Price)}.
+
+get_sum(Products) ->
+    Query1 = "drop function suma(integer,integer) cascade ; create function suma(integer,integer) returns integer as ' declare begin return ($2 * (select cena from produkt where produkt_id = $1)) ; end; ' language 'plpgsql';",
+    %%lists:foldr(fun({Id,C},Acc) ->
+      ok.
+
+
+
+
+
+
