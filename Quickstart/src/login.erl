@@ -8,6 +8,15 @@ main() ->
 title() ->
     "SuperShop: Login page".
 
+inout() ->
+    Login = case wf:login() of
+                undefined ->
+                    #label { text="<a href=login>Login</a>"};
+                _X ->
+                    #label { text="<a href=login>Logged as "++_X++"</a>" }
+            end,
+    Login.
+
 login() ->
     Login = case wf:user() of
         undefined ->
@@ -28,27 +37,24 @@ login() ->
      #p{},
      #button { text="Login",
                actions=#event{type=click,postback=login}},
-
-     #button { text="test",
-               actions=#event{type=click,postback=test}}
+     #p {},
+     "</br></br>",
+     #label { text="Need new account?" },
+     #link { text="Sign up!", url=add_account }
      ].
 
 event(login) ->
     case db_login:validate(wf:q("tb_login"),wf:q("tb_password")) of
         {ok,User} ->
             wf:user(User),
-            wf:redirect_from_login("login");
+            wf:session(uid,db_login:get_id(User)),
+            wf:redirect_from_login("category");
         {error,X} ->
-            error_logger:error_report("module: login, error: "++X),
-            wf:redirect_from_login("login")
+            %error_logger:error_report("module: login, error: "++X),
+            wf:redirect_to_login("login")
     end;
 event(logout) ->
     wf:clear_session(),
     wf:redirect("login");
-event(test) ->
-    db_login:test(),
-    X = db_login:add_account("asd","qwe","email3"),
-    io:format("~p~n",[X]);
-    %db_login:upload_image();
 event(_) ->
     ok.

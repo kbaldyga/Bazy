@@ -68,32 +68,34 @@ cart_content() ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 event(finish) ->
     Cart = sets:to_list(wf:session(koszyk)),
-    %%Sum = lists:foldr(fun({{E,Price},C},Acc) ->
-    %%                         io:format("P ~p, C ~c, A ~p ~n", [Price,C,Acc]),
-    %%                          (Price * C) + Acc end,0,Cart),
-    io:format("~p", [Cart]),
-    wf:flash( [#label { text = "Whole Price: " ++ "Sum" } ,
-               #button { id=loginbtn, text="Order",
-                         actions=#event{type=click, postback=order}}]);
+    case wf:user() of
+        undefined ->
+            wf:redirect_to_login("login");
+        _Other ->
+            ID = wf:session(uid),
+            db_cart:add(Cart,ID),
+            wf:flash("Zamowienie zostalo przyjete. Dziekujemy za zainteresowanie oferta"),
+            wf:session(koszyk,sets:new())
+    end;
 
 event(login) ->
-    User = case wf:user() of
+    _User = case wf:user() of
         undefined ->
             wf:redirect_to_login("login");
         X -> X
     end;
 event(Id) ->
     io:format("removed-> ~p~n", [Id]),
-    ok;
-event(_) ->
     ok.
+%event(_) ->
+%    ok.
 
 inplace_textbox_event(_Tag, Value) ->
     S = wf:session(koszyk),
     E = sets:filter(fun({X,_B}) -> X == list_to_integer(_Tag) end,S),
-    io:format("~p",[E]),
+    %io:format("~p",[E]),
     S2 = sets:del_element(hd(sets:to_list(E)),S),
     S3 = sets:add_element({list_to_integer(_Tag),list_to_integer(Value)},S2),
     wf:session(koszyk,S3),
-    io:format("~p",[sets:to_list(wf:session(koszyk))]),
+    %io:format("~p",[sets:to_list(wf:session(koszyk))]),
   Value.

@@ -101,7 +101,9 @@ categories() ->
                       body=[
                          "<li>",
                          #link { id=catLink, class=none } ,
-                         "</li>"] }
+                         "</li>"] },
+     #p{},
+     #link { text="Koszyk", url=cart }
     ].
 
 categories_transform(DataRow,_Acc) ->

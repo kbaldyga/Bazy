@@ -7,6 +7,7 @@ main() -> #template { file="./templates/grid.html" }.
 title() -> "Nitrogen Web Framework for Erlang".
 
 layout() ->
+	wf:redirect_from_login("category"),
     #container_12 { body=[
         #grid_12 { class=header, body=common:header(home) },
         #grid_clear {},

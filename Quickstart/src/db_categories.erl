@@ -11,7 +11,7 @@ add_category(Name,Description) ->
     database:sql_query(Query).
 
 category_name(Id) ->
-    Query = wf:f("select nazwa from kategoria where kategoria_id=~p",[Id]),
+    Query = wf:f("select nazwa from kategoria where id_kategoria=~p",[Id]),
     case database:sql_query(Query) of
         {error,_X} ->
             {error,_X} ;

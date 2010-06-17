@@ -1,43 +1,29 @@
 -module(db_login).
--export([validate/2,add_account/3,test/0,upload_image/0,draw_file/0]).
+-export([validate/2,add_account/3,get_id/1]).
 
 validate(User,Pass) ->
-    Hash = binary_to_list(crypto:md5(Pass)),
-    Query = "select pass from user_db where user_login='"++User++"'",
+    Query=wf:f("select * from f_sprawdz_login_haslo('~s','~s')",[User,Pass]),
     case database:sql_query(Query) of
-        {selected,_X,Response} ->
-            if
-                element(1,hd(Response)) == Hash ->
-                    {ok,User};
-                true ->
-                    {error,bad_login}
-            end ;
-        X ->
-            {error,X}
+        {selected,["f_sprawdz_login_haslo"],[{"1"}]} ->
+            {ok,User};
+        _X ->
+            io:format("~p",[_X]),
+            {error,_X}
     end.
 
 add_account(User,Pass,Email) ->
-    Hash = binary_to_list(crypto:md5(Pass)),
-    Query = "insert into user_db values(Default,E'"
-        ++User++"',E'"++Hash++"',E'"++Email++"');",
-    Response = database:sql_query(Query),
-    Response.
-
-test()->
-    io:format("~p~n",[database:sql_query("select * from user_db")]).
-
-upload_image() ->
-    {ok,File} = file:read_file("c:/image.png"),
-    Query = "insert into images values(E'"++binary_to_list(File)++"');",
+    Query=wf:f("select * from f_nowy_uzytkownik('~s','~s','~s')",[User,Pass,Email]),
     case database:sql_query(Query) of
-        {error,X} ->
-            io:format("~s", [X]);
-        X ->
-            X
+        {selected,_Rows,_Columns} ->
+            ok;
+        _X ->
+            _X
     end.
 
-draw_file() ->
-    wf:set_content_type("image/png"),
-    Query = "select img from images",
-    {selected,_X,Response} = database:sql_query(Query),
-    element(1,hd(Response)).
+get_id(User) ->
+    Query = "select id_klient from klient where login='"++User++"'",
+    case database:sql_query(Query) of
+        {selected,_Rows,[{Id}]} ->
+            Id;
+        _Other -> 0
+    end.

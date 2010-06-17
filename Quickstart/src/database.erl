@@ -20,7 +20,7 @@
 
 -define(SERVER, ?MODULE).
 %ANSI
--define(CONNECTION_STRING,"Driver={PostgreSQL ANSI};Server=127.0.0.1;Port=5432;Database=projekt;Uid=postgres;Pwd=asdasd;").
+-define(CONNECTION_STRING,"Driver={PostgreSQL ANSI};Server=127.0.0.1;Port=5432;Database=biblioteka;Uid=postgres;Pwd=asdasd;").
 
 
 %%%===================================================================

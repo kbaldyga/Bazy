@@ -20,5 +20,5 @@ erl \
     -pa ./ebin ../apps/*/ebin ../apps/*/include  \
     -env ERL_FULLSWEEP_AFTER 10 \
     -eval "application:start(mnesia)" \
-    -eval "application:start(mprocreg)" \
+    -eval "application:start(nprocreg)" \
     -eval "application:start(quickstart)"

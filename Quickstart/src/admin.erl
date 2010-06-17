@@ -9,9 +9,20 @@ title() ->
     "Admin control page".
 
 content() ->
-    add_category().
+    case wf:user() of
+        "admin" ->
+            add_category();
+        _X ->
+            wf:redirect_to_login("login")
+    end.
+content2() ->
+    add_product().
+content3() ->
+    add_to_categories().
+
 categories() ->
-    category:categories().
+    category:categories() ++
+        [ "</br></br>", #link { text="Zlecenia", url=zlecenia } ].
 
 
 
@@ -24,12 +35,13 @@ categories() ->
 add_category() ->
     [
      #p{},
-     #label { text="Nazwa kategorii: " },
-     #textbox { id=tb_name, text="", next=ta_description },
+     "<font size=5 color=red>Dodaj kategorie</font></br>",
+     #label { text="Nazwa kategorii: " },"</br>",
+     #textbox { id=tb_name, text="", next=ta_description },"</br>",
      #p {},
-     #label { text="Opis: "},
-     #textarea { id=ta_description, text="" },
-     #flash {},
+     #label { text="Opis: "},"</br>",
+     #textarea { id=ta_description, text="" },"</br>",
+     #flash {},"</br>",
      #button { text="Dodaj",
                actions=#event{type=click,postback=add}}
     ].
@@ -42,22 +54,23 @@ add_product() ->
     wf:session(products,sets:new()),
     Body = [
      #p{},
-     #label { text="Product name: " },
-     #textbox { id=tb_name, text="", next=ta_description },
+     "<font size=5 color=red>Dodaj produkt</font></br>",
+     #label { text="Product name: " },"</br>",
+     #textbox { id=tb_pname, text="", next=ta_pdescription },"</br>",
      #p {},
-     #label { text="Short description: "},
-     #textarea { id=ta_description, text="" },
-     #label { text="Long description: "},
-     #textarea { id=ta_ldescription, text="", style=" height: 200px" },
-     #label { text="Price: " },
-     #textbox { id=tb_price, text="" },
-     #label { text="Available" },
-     #textbox { id=tb_available, text="" },
+     #label { text="Short description: "},"</br>",
+     #textarea { id=ta_pdescription, text="" },"</br>",
+     #label { text="Long description: "},"</br>",
+     #textarea { id=ta_ldescription, text="", style=" height: 200px" },"</br>",
+     #label { text="Price: " },"</br>",
+     #textbox { id=tb_price, text="" },"</br>",
+     #label { text="Available" },"</br>",
+     #textbox { id=tb_available, text="" },"</br>",
      #flash {},
-     #label { text="Photo" },
-     #upload { tag=img_upload , show_button=false},
+     #label { text="Photo" },"</br>",
+     #upload { tag=img_upload , show_button=false},"</br>",
      #button { id=btn_add, text="Add",
-               actions=#event{type=click,postback=add}}
+               actions=#event{type=click,postback=padd}}
            ],
     Body.
 
@@ -95,7 +108,7 @@ add_to_categories() ->
                 transform=fun alternate_color/2,
                 body=#tablerow {id=top,cells=[
 %                  #tablecell { body=#button { id=idButton, text=" select" } },
-                  #tablecell { body=#checkbox { id=idButton, text=" select" } },
+                  #tablecell { body=#checkbox { id=idButton, text="" } },
                   #tablecell { id=nameLabel },
                   #tablecell { id=descriptionLabel }
                 ]}}
@@ -138,12 +151,12 @@ event(ID) when is_integer(ID) ->
     ok;
 
 
-event(add) ->
+event(padd) ->
     %% db_categories:add_category(
     %%   wf:q("tb_name"),
     %%   wf:q("ta_description")),
-    Name = wf:q("tb_name"),
-    SD = wf:q("ta_description"),
+    Name = wf:q("tb_pname"),
+    SD = wf:q("ta_pdescription"),
     LD = wf:q("ta_ldescription"),
     Price = wf:q("tb_price"),
     A = wf:q("tb_available"),

@@ -1,0 +1,56 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage[plmath,OT4]{polski}
+
+\begin {titlepage}
+\title{SuperShop. Dokumentacja}
+
+\date{\today}
+\author{Kamil Bałdyga}
+
+\end{titlepage}
+
+\begin{document}
+  \maketitle \newpage
+
+\section{Instalacja}
+  \subsection{Wymagania}
+	Do poprawnego działania programu wymagana jest
+	\begin {itemize}
+		\item wirtualna maszyna erlanga (projekt pisany oraz testowany był w wersji: Erlang R13B04 (erts-5.7.5))
+		\item PostgeSQL (pisany oraz testowany na wersji 8.4.3)
+	\end{itemize}
+  \subsection{Uruchomienie}
+	W celu uruchomienia serwera hostującego aplikację, należy wykonać skrypt znajdujący się w katalogu Quickshart (quickstart.sh). Standardowy port nasłuchujący (z krótym należy się łączyć) to 8000 (można to zmienić w pliku Quickstart/src/quickstart\_app linia 4)
+  \subsection{Konfiguracja}
+	\begin{itemize}
+		\item Wymagane jest uprzednie skonfigurowanie połączenia z bazą danych. Należy wygenerować odpowiedni connection string (adres serwera bazy danych, login, ...), oraz umieścić go w pliku: Quickstart/src/database.erl w linii 23 (zgodnie z zamieszczonym przykładem).
+		\item Należy zadbać o to, aby w bazie znalazł się użytkownik o nazwie "admin" (bez cudzysłowów), ponieważ to on, jako sprzedawca będzie miał dostęp do dodatkowych funkcjonalności. Hasła w bazie danych szyfrowane są metodą md5, nie istnieje więc możliwość przypomnienia hasła. Administrator bazy danych, może jedynie zmienić je na nowe.
+	\end{itemize}
+ 
+\section{Podręcznik użytkownika}
+  \subsection{Podręcznik administratora}
+	Panel administratora znajduje się pod adresem /admin. Tam też można dodawać nowe kategorie, oraz produkty. 
+	\begin {itemize}
+		\item  Dla produktu można dodać zdjęcie, jednak obsługiwany jest tylko format .jpg (produkt bez obrazka wyświetlał będzie domyśliny obrazek Quickstart/static/images/produkty/no\_image.jpg). Konieczne jest wypełnienie wszystkich pól. Jeśli produkt nie zostanie przypisany do żadnej z kategorii widoczny będzie tylko i wyłącznie pod adresem /product (tam wypisywane są wszystkie produkty).
+		\item Dodanie nowej kategorii to wypełnienie tylko 2 pól i kliknięcie przycisku dodaj.
+	\end {itemize}
+	Ze strony panelu /admin dostać się można również do strony /zlecenia. Tam też administrator może zmieniać stan produktów z nieobsłużonego, na obsłużony. W tabeli znajdują się informacje o identyfikatorze zamowienia, identyfikatorze produktu, typie płatności, email zamawiającego, oraz nazwa produktu. Po kliknięciu przycisku zlecenie otrzyma status obsłużone i nie będzie więcej wyświetlane (nadal będzie istniało w bazie danych).
+  \subsection {Podręcznik użytkownika}
+	Każdy klient ma możliwość przeglądania produktów, oraz dodawania ich do koszyka. Produkty przypisane są do kategorii (może być kilka). Na stronie widnieje informacja ile produktów znajduje się w każdej kategorii. Puste kategorie nie są wyświetlane. Każdy produkt opisany jest przez zdjęciue, nazwę, krótki opis, cenę, oraz informację o dostępności. Po kliknięciu nazwy produktu klient przenoszony jest na stronę z dokładnymi informacjami na temat produktu. Tam też znajduje się przycisk dodania do koszyka.
+Po wybraniu odpowiednich produktów, należy przejść do swojego koszyka (link po lewej stronie, bądź bezpośrednio /cart). Po kliknięciu przycisku finalizującego zakupy:
+	\begin {itemize}
+		\item niezalogowany klient proszony jest o zalogowanie, po zalogowaniu wykonuje się akcja 2
+		\item poprawnie zalogowany klient składa zamówienie. Informacja o poprawnym złożeniu zamówienia pojawi się na stronie.
+	\end {itemize}
+	Do zalogowania potrzebne jest konto użytkownika. Aby je utworzyć należy kliknąć "Sign Up!" na stronie login (bezpośrednio /add\_account), oraz uzupełnić nazwę użytkownika, hasło, oraz email. Od tej pory można składać poprawne zamówienia.
+
+
+  % This is a comment; it is not shown in the final output.
+  % The following shows a little of the typesetting power of LaTeX
+%  \begin{align}
+
+%  \end{align}
+
+\end{document}
