@@ -36,7 +36,7 @@
 		\item  Dla produktu można dodać zdjęcie, jednak obsługiwany jest tylko format .jpg (produkt bez obrazka wyświetlał będzie domyśliny obrazek Quickstart/static/images/produkty/no\_image.jpg). Konieczne jest wypełnienie wszystkich pól. Jeśli produkt nie zostanie przypisany do żadnej z kategorii widoczny będzie tylko i wyłącznie pod adresem /product (tam wypisywane są wszystkie produkty).
 		\item Dodanie nowej kategorii to wypełnienie tylko 2 pól i kliknięcie przycisku dodaj.
 	\end {itemize}
-	Ze strony panelu /admin dostać się można również do strony /zlecenia. Tam też administrator może zmieniać stan produktów z nieobsłużonego, na obsłużony. W tabeli znajdują się informacje o identyfikatorze zamowienia, identyfikatorze produktu, typie płatności, email zamawiającego, oraz nazwa produktu. Po kliknięciu przycisku zlecenie otrzyma status obsłużone i nie będzie więcej wyświetlane (nadal będzie istniało w bazie danych).
+	Ze strony panelu /admin dostać się można również do strony /zlecenia. Tam też administrator może zmieniać stan produktów z nieobsłużonego, na obsłużony. W tabeli znajdują się informacje o identyfikatorze zamowienia, identyfikatorze produktu, typie płatności, identyfikator zamawiającego, oraz nazwa produktu. Po kliknięciu przycisku zlecenie otrzyma status obsłużone i nie będzie więcej wyświetlane (nadal będzie istniało w bazie danych). Identyfikator zamawiającego jest linkiem, który przenosi na stronę wyświetlającą dane użytkownika wymagane do zakończenia transakcji.
   \subsection {Podręcznik użytkownika}
 	Każdy klient ma możliwość przeglądania produktów, oraz dodawania ich do koszyka. Produkty przypisane są do kategorii (może być kilka). Na stronie widnieje informacja ile produktów znajduje się w każdej kategorii. Puste kategorie nie są wyświetlane. Każdy produkt opisany jest przez zdjęciue, nazwę, krótki opis, cenę, oraz informację o dostępności. Po kliknięciu nazwy produktu klient przenoszony jest na stronę z dokładnymi informacjami na temat produktu. Tam też znajduje się przycisk dodania do koszyka.
 Po wybraniu odpowiednich produktów, należy przejść do swojego koszyka (link po lewej stronie, bądź bezpośrednio /cart). Po kliknięciu przycisku finalizującego zakupy:
@@ -44,7 +44,7 @@ Po wybraniu odpowiednich produktów, należy przejść do swojego koszyka (link 
 		\item niezalogowany klient proszony jest o zalogowanie, po zalogowaniu wykonuje się akcja 2
 		\item poprawnie zalogowany klient składa zamówienie. Informacja o poprawnym złożeniu zamówienia pojawi się na stronie.
 	\end {itemize}
-	Do zalogowania potrzebne jest konto użytkownika. Aby je utworzyć należy kliknąć "Sign Up!" na stronie login (bezpośrednio /add\_account), oraz uzupełnić nazwę użytkownika, hasło, oraz email. Od tej pory można składać poprawne zamówienia.
+	Do zalogowania potrzebne jest konto użytkownika. Aby je utworzyć należy kliknąć "Sign Up!" na stronie login (bezpośrednio /add\_account), oraz uzupełnić nazwę użytkownika, hasło, oraz email. Od tej pory można składać poprawne zamówienia. Uzupełnić, lub zmienić dane kontaktowe można w panelu klienta.
 
 
   % This is a comment; it is not shown in the final output.

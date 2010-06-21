@@ -2,7 +2,7 @@
 -compile(export_all).
 
 data() ->
-    Query = "select id_zamowienie, id_produkt, platnosc, email, nazwa From zbior_zamowien join zamowienie using(id_zamowienie) join klient using (id_klient) join produkt using (id_produkt) where czy_obsluzono='f'",
+    Query = "select id_zamowienie, id_produkt, platnosc, id_klient, nazwa From zbior_zamowien join zamowienie using(id_zamowienie) join klient using (id_klient) join produkt using (id_produkt) where czy_obsluzono='f'",
     case database:sql_query(Query) of
         {selected,_Rows,C} ->
             lists:map(fun(X) -> tuple_to_list(X) end, C) ;

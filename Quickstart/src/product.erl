@@ -26,7 +26,7 @@ product_data() ->
 product_map() ->
     [
      prodId@text,
-     prodName@text,
+     pr,
      prodName@url,
      prodSDesc@text,
      prodLDesc@text,

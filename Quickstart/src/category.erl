@@ -103,7 +103,8 @@ categories() ->
                          #link { id=catLink, class=none } ,
                          "</li>"] },
      #p{},
-     #link { text="Koszyk", url=cart }
+     #link { text="Koszyk", url=cart },"</br>",
+     #link { text="Panel klienta", url=klient}
     ].
 
 categories_transform(DataRow,_Acc) ->

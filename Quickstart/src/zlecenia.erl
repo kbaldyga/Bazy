@@ -24,7 +24,8 @@ zlecenia_map() ->
      id_zamowienie@postback,
      id_produkt@text,
      platnosc@text,
-     email@text,
+     user@url,
+     user@text,
      nazwa@text
     ].
 
@@ -37,7 +38,7 @@ zlecenia() ->
               #tableheader { style="width:47px;",text="id_Z" },
               #tableheader { style="width:40px;",text="id_PR" },
               #tableheader { style="width:100px;",text="platnosc" },
-              #tableheader { style="width:100px;",text="email" },
+              #tableheader { style="width:100px;",text="UserID" },
               #tableheader { style="width:200px;",text="nazwa" }]
                       },
             #bind { id=table, data=Data, map=Map,
@@ -49,7 +50,7 @@ zlecenia() ->
                        %#tablecell { style="width:17px;", id=id_zamowienie  },
                        #tablecell { style="width:40px;",id=id_produkt },
                        #tablecell { style="width:100px;",id=platnosc },
-                       #tablecell { style="width:100px;",id=email },
+                       #tablecell { style="width:100px;",body=#link{id=user }},
                        #tablecell { style="width:200px;",id=nazwa } ] } } ] }
 
            ],
@@ -59,7 +60,9 @@ zlecenia() ->
 transform(DataRow,_Acc) ->
     [A,B,C,D,E] = DataRow,
     N = integer_to_list(B),
-    { [A,N,C,D,E],_Acc,[]}.
+    User = wf:f("klient?id=~p",[D]),
+    DD = integer_to_list(D),
+    { [A,N,C,User,DD,E],_Acc,[]}.
 
 event(Id) ->
     db_zlecenia:remove(Id),

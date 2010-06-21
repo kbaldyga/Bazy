@@ -5,6 +5,7 @@ validate(User,Pass) ->
     Query=wf:f("select * from f_sprawdz_login_haslo('~s','~s')",[User,Pass]),
     case database:sql_query(Query) of
         {selected,["f_sprawdz_login_haslo"],[{"1"}]} ->
+            wf:session(uid,get_id(User)),
             {ok,User};
         _X ->
             io:format("~p",[_X]),
@@ -15,6 +16,7 @@ add_account(User,Pass,Email) ->
     Query=wf:f("select * from f_nowy_uzytkownik('~s','~s','~s')",[User,Pass,Email]),
     case database:sql_query(Query) of
         {selected,_Rows,_Columns} ->
+            wf:session(uid,get_id(User)),
             ok;
         _X ->
             _X

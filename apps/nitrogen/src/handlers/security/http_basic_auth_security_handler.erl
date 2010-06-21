@@ -17,7 +17,7 @@
 %% Basic usage:
 %% 
 %% In the module that dispatches a request to Nitrogen, add a call to
-%% nitrogen:set_handler(http_basic_auth_security_handler, CallbackMod) 
+%% nitrogen:handler(http_basic_auth_security_handler, CallbackMod) 
 %% after nitrogen:init_request/2 but before nitrogen:run/0. 
 %%
 %% This will tell Nitrogen to use the http_basic_auth_security_handler
@@ -42,11 +42,19 @@
 %%
 %% authenticate/3 - will decide if authentication will be requested by the client.
 %% In case it returns 'true', no authentication will be requested.
+
+%% -spect is_protected(atom()) -> bool().
+%%
+%% is_protected/1 - will decide if a resource is protected by authentication.
+%% In case it returns 'true', authentication will be requested over the
+%% resource.
 %%
 %% EXAMPLES:
 %%
 %% realm() -> "visitor".
 %%
+%% is_protected(index) -> true;
+%% is_protected(_) -> false;
 %% is_authenticated(Module, User) -> false.
 %%
 %% authenticate(web_list, X, X)       -> true;
@@ -61,13 +69,18 @@
 %% If the step is successful, then move on to the step below.
 %% If the step is NOT successful, then prompt for authentication.
 
-init(CallbackMod, State) -> 
-    case wf:header(authorization) of
-        AuthHeader when AuthHeader /= undefined ->
-            PageModule = wf:page_module(),
-            check_auth_header(PageModule, CallbackMod, AuthHeader);
-        _ -> 
-            prompt_for_authentication(CallbackMod)
+init(CallbackMod, State) ->
+    PageModule = wf:page_module(),
+    case CallbackMod:is_protected(PageModule) of
+	true ->
+	    case wf:header(authorization) of
+		AuthHeader when AuthHeader /= undefined ->           
+		    check_auth_header(PageModule, CallbackMod, AuthHeader);
+		_ -> 
+		    prompt_for_authentication(CallbackMod)
+	    end;
+	_ ->
+	    do_nothing
     end,
     {ok, State}.
 
